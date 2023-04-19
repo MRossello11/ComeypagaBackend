@@ -21,6 +21,7 @@ app.use(
 
 
 app.use('/login', require('./user/login'));
+app.use('/registry', require('./user/registry'));
 
 app.all('*', (req, res) => {
     res.status(404);
