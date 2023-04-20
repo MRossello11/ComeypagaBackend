@@ -10,7 +10,7 @@ const getRestaurants = async(req,res) => {
 }
 
 // create new restaurant
-const postRestaurant = async(req, res) => {
+const putRestaurant = async(req, res) => {
     const {
         name,
         foodType,
@@ -81,5 +81,5 @@ const postRestaurant = async(req, res) => {
 
 module.exports = {
     getRestaurants,
-    postRestaurant
+    putRestaurant
 }
