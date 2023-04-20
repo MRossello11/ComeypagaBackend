@@ -19,10 +19,21 @@ app.use(
   })
 );
 
+app.use(
+  session({
+    secret: constants.userRoleCookieSecret,
+    resave: false,
+    saveUnitialized: false
+  })
+);
 
+// users
 app.use('/user/login', require('./user/login'));
 app.use('/user/registry', require('./user/registry'));
 app.use('/user/resetPassword', require('./user/resetPassword'));
+
+// restaurants
+app.use('/restaurants', require('./restaurants/restaurants'));
 
 app.all('*', (req, res) => {
     res.status(404);
