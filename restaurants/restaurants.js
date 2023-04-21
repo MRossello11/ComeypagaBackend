@@ -7,6 +7,7 @@ router.route('/')
     .get(restaurantController.getRestaurants)
     .post(restaurantController.postRestaurant)
     .put(restaurantController.putRestaurant)
+    .delete(restaurantController.deleteRestaurant)
 ;
 
 module.exports = router;

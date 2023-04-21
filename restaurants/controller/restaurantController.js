@@ -98,7 +98,7 @@ const postRestaurant = async(req, res) => {
         return res.sendStatus(400);
     }
 
-    const foundRestaurant = await Restaurant.findOne({ _id: id });
+    const foundRestaurant = await Restaurant.findOne({ _id: id }).exec();
 
     if(!foundRestaurant){
         return res.status(500).json({'message':'Restaurant not found'});
@@ -127,6 +127,28 @@ const postRestaurant = async(req, res) => {
         res.sendStatus(200);
     } catch(err){
         console.error(err);
+        res.status(500).json({ 'message': err.message });
+    }
+
+}
+
+const deleteRestaurant = async(req, res) => {
+    const { id } = req.body;
+
+    const foundRestaurant = await Restaurant.findOne({ _id: id }).exec();
+
+    if(!foundRestaurant){
+        return res.status(500).json({'message':'Restaurant not found'});
+    }
+
+    try {
+        await Restaurant.deleteOne(
+            { _id: foundRestaurant.id }
+        );
+        res.sendStatus(200);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ 'message': err.message });
     }
 
 }
@@ -134,5 +156,6 @@ const postRestaurant = async(req, res) => {
 module.exports = {
     getRestaurants,
     putRestaurant,
-    postRestaurant
+    postRestaurant,
+    deleteRestaurant
 }
