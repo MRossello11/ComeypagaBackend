@@ -13,6 +13,7 @@ router.route('/')
 
 router.route('/menu')
     .get(menuController.getMenu)
+    .put(menuController.putPlate)
 ;
 
 module.exports = router;
