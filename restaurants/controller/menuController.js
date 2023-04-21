@@ -123,9 +123,30 @@ const postPlate = async(req, res) => {
 
 }
 
+const deletePlate = async(req,res) => {
+    const {
+        restaurantId,
+        plateId
+    } = req.body;
+
+    try{
+        const foundPlate = await Restaurant.findOneAndUpdate({ _id: restaurantId },
+            { $pull: { menu: { _id: plateId } } },
+            { new: true }
+            ).exec();
+
+        console.log(foundPlate);
+
+        res.sendStatus(200);
+    } catch(err){
+        console.error(err);
+        res.status(500).json({"message":err.message});
+    }
+}
 
 module.exports = {
     getMenu,
     putPlate,
-    postPlate
+    postPlate,
+    deletePlate
 }
