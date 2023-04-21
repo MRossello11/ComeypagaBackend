@@ -12,7 +12,6 @@ router.route('/')
 ;
 
 router.route('/menu')
-    .get(menuController.getMenu)
     .put(menuController.putPlate)
     .post(menuController.postPlate)
     .delete(menuController.deletePlate)
