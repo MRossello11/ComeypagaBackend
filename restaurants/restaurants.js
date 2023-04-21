@@ -5,7 +5,8 @@ const restaurantController = require('./controller/restaurantController');
 router.route('/')
     // restaurant list
     .get(restaurantController.getRestaurants)
-    .put(restaurantController.postRestaurant)
+    .post(restaurantController.postRestaurant)
+    .put(restaurantController.putRestaurant)
 ;
 
 module.exports = router;
