@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const MongoDB = require('bson');
-const orderStates = require('../orderStates');
+const orderStates = require('../orderStates').orderStates;
 
 const orderSchema = new Schema({
     plates: [
@@ -37,7 +37,7 @@ const orderSchema = new Schema({
     state: {
         number: {
             type: Number,
-            default: 1
+            default: orderStates.inProgressNumber
 
         },
         description: {
@@ -55,7 +55,7 @@ const orderSchema = new Schema({
     },
     riderId:{ 
         type: MongoDB.ObjectId,
-        required: false
+        default: null
     },
     userId: {
         type: MongoDB.ObjectId,
