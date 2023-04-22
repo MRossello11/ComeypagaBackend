@@ -120,8 +120,45 @@ const postOrderPlates = async(req,res) => {
     }
 }
 
+// delete order
+const deleteOrder = async(req,res) => {
+    const {
+        orderId
+    } = req.body;
+
+    // check attributes
+    if(!orderId){
+        return res.sendStatus(400);
+    }
+
+    // get order
+    const order = await Order.findOne({ _id: orderId }).exec();
+
+    if(!order){
+        return res.status(500).json({'message':'Order not found'});
+    }
+
+    // only orders in progress can be modified
+    if(order.state > orderStates.orderStates.inProgressNumber){
+        return res.status(500).json({'message':'Order is not in preparation, cannot modify'});
+    }
+
+    try {
+        // delete order    
+        await Order.deleteOne(
+            { _id: order.id }
+        );
+
+        res.sendStatus(200);
+    } catch (error) {
+        console.error(error);
+        res.send(500).json({error:error})
+    }
+}
+
 module.exports = {
     getOrdersUser,
     putOrder,
-    postOrderPlates
+    postOrderPlates,
+    deleteOrder
 }

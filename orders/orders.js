@@ -7,7 +7,7 @@ router.route('/user')
     .get(userOrderController.getOrdersUser)
     .put(userOrderController.putOrder)
     .post(userOrderController.postOrderPlates)
-    // .delete()
+    .delete(userOrderController.deleteOrder)
 ;
 
 router.route('/rider')
