@@ -10,7 +10,7 @@ const getRestaurants = async(req,res) => {
 }
 
 // create new restaurant
-const postRestaurant = async(req, res) => {
+const putRestaurant = async(req, res) => {
     const {
         name,
         foodType,
@@ -79,7 +79,83 @@ const postRestaurant = async(req, res) => {
     }
 }
 
+const postRestaurant = async(req, res) => {
+    const {
+        id,
+        name,
+        foodType,
+        typology,
+        reviewStars,
+        phone,
+        email,
+        street,
+        town,
+        picture,
+        menu
+    } = req.body;
+
+    if(!id){
+        return res.sendStatus(400);
+    }
+
+    const foundRestaurant = await Restaurant.findOne({ _id: id }).exec();
+
+    if(!foundRestaurant){
+        return res.status(500).json({'message':'Restaurant not found'});
+    }
+
+    try{
+        await Restaurant.updateOne(
+            { _id: foundRestaurant.id },
+            {
+                $set: {
+                    name: name ? name : foundRestaurant.name,
+                    foodType: foodType ? foodType : foundRestaurant.foodType,
+                    typology: typology ? typology : foundRestaurant.typology,
+                    reviewStars: reviewStars ? reviewStars : foundRestaurant.reviewStars,
+                    phone: phone ? phone : foundRestaurant.phone,
+                    email: email ? email : foundRestaurant.email,
+                    address: {
+                        street: street ? street : foundRestaurant.street,
+                        town: town ? town : foundRestaurant.town
+                    },
+                    picture: picture ? picture : foundRestaurant.picture,
+                    menu: menu ? menu : foundRestaurant.menu
+                }
+            }
+        );
+        res.sendStatus(200);
+    } catch(err){
+        console.error(err);
+        res.status(500).json({ 'message': err.message });
+    }
+
+}
+
+const deleteRestaurant = async(req, res) => {
+    const { id } = req.body;
+
+    const foundRestaurant = await Restaurant.findOne({ _id: id }).exec();
+
+    if(!foundRestaurant){
+        return res.status(500).json({'message':'Restaurant not found'});
+    }
+
+    try {
+        await Restaurant.deleteOne(
+            { _id: foundRestaurant.id }
+        );
+        res.sendStatus(200);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ 'message': err.message });
+    }
+
+}
+
 module.exports = {
     getRestaurants,
-    postRestaurant
+    putRestaurant,
+    postRestaurant,
+    deleteRestaurant
 }
