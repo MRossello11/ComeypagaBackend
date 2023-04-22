@@ -35,6 +35,9 @@ app.use('/user/resetPassword', require('./user/resetPassword'));
 // restaurants
 app.use('/restaurants', require('./restaurants/restaurants'));
 
+// orders
+app.use('/orders', require('./orders/orders'));
+
 app.all('*', (req, res) => {
     res.status(404);
     if (req.accepts('html')) {
