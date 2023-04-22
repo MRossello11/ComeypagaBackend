@@ -6,7 +6,7 @@ const riderOrderController = require('./controller/riderOrderController')
 router.route('/user')
     .get(userOrderController.getOrdersUser)
     .put(userOrderController.putOrder)
-    // .post()
+    .post(userOrderController.postOrderPlates)
     // .delete()
 ;
 
