@@ -6,12 +6,16 @@ const orderStates = require('../orderStates');
 const orderSchema = new Schema({
     plates: [
         {
-            price: {
+            id: {
+                type: MongoDB.ObjectId,
+                required: true
+            },
+            name: {
                 type: String,
                 required: true
             },
             quantity: {
-                type: int,
+                type: Number,
                 required: false
             },
             price: {
@@ -31,8 +35,15 @@ const orderSchema = new Schema({
         }
     },
     state: {
-        type: String,
-        default: orderStates.inProgress
+        number: {
+            type: Number,
+            default: 1
+
+        },
+        description: {
+            type: String,
+            default: orderStates.inProgress
+        }
     },
     arrivalTime: {
         type: Date,
@@ -43,11 +54,11 @@ const orderSchema = new Schema({
         required: true
     },
     riderId:{ 
-        type: objectId,
+        type: MongoDB.ObjectId,
         required: false
     },
     userId: {
-        type: objectId,
+        type: MongoDB.ObjectId,
         required: true
     }
 });

@@ -1,16 +1,17 @@
 var express = require('express');
 var router = express.Router();
-const orderController = require('./controller/orderController')
+const userOrderController = require('./controller/userOrderController')
+const riderOrderController = require('./controller/riderOrderController')
 
 router.route('/user')
-    .get(orderController.getOrdersUser)
-    // .put()
+    .get(userOrderController.getOrdersUser)
+    .put(userOrderController.putOrder)
     // .post()
     // .delete()
 ;
 
 router.route('/rider')
-    .get(orderController.getOrdersRider)
+    .get(riderOrderController.getOrdersRider)
     // .post()
 ;
 
