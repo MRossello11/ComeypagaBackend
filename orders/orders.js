@@ -6,8 +6,8 @@ const riderOrderController = require('./controller/riderOrderController')
 router.route('/user')
     .get(userOrderController.getOrdersUser)
     .put(userOrderController.putOrder)
-    // .post()
-    // .delete()
+    .post(userOrderController.postOrderPlates)
+    .delete(userOrderController.deleteOrder)
 ;
 
 router.route('/rider')
