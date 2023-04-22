@@ -12,7 +12,7 @@ router.route('/user')
 
 router.route('/rider')
     .get(riderOrderController.getOrdersRider)
-    // .post()
+    .post(riderOrderController.postOrderState)
 ;
 
 module.exports = router

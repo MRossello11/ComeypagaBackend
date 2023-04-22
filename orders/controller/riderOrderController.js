@@ -23,10 +23,11 @@ const getOrdersRider = async(req, res) => {
 const postOrderState = async(req, res) => {
     const { 
         orderId,
-        newState
+        newState,
+        riderId
     } = req.body;
 
-    if(!orderId || !newState){
+    if(!orderId || !newState || !riderId){
         return res.sendStatus(400);
     }
 
@@ -42,12 +43,17 @@ const postOrderState = async(req, res) => {
 
     const result = await Order.updateOne(
         { _id: order.id},
-        { $set: { state: { number: newState, description: orderStates.orderStatesList[newState] }}}
+        { $set: 
+            { 
+                state: { number: newState, description: orderStates.orderStatesList[newState] },
+                riderId: riderId
+            }}
     );
 
     res.status(200).json(result);
 }
 
 module.exports = {
-    getOrdersRider
+    getOrdersRider,
+    postOrderState
 }

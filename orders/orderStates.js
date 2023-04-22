@@ -3,16 +3,16 @@ const orderStates = {
     delivering: "Delivering",
     delivered: "Delivered",
     late: "Late",
-    inProgressNumber: 1,
-    deliveringNumber: 2,
-    lateNumber: 3,
-    deliveredNumber: 4
+    inProgressNumber: 0,
+    deliveringNumber: 1,
+    lateNumber: 2,
+    deliveredNumber: 3
 };
 const orderStatesList = [
     "In progress",
     "Delivering",
-    "Delivered",
     "Late",
+    "Delivered"
 ];
 
 module.exports = { 
