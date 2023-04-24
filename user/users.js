@@ -4,6 +4,7 @@ const userController = require('./controllers/userController');
 
 router.route('/rider')
     .get(userController.getRiders)
+    .post(userController.postRider)
 
 ;
 
