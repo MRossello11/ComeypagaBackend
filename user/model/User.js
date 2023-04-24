@@ -41,9 +41,8 @@ const userSchema = new Schema({
         required: true
     },
     role: {
-        user: {
-            type: Number,
-            default: 10
+        user: { // 10
+            type: Number
         },
         rider: { // 20
             type: Number,
