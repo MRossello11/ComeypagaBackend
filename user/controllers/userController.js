@@ -70,8 +70,34 @@ const postRider = async(req, res) =>{
     }
 };
 
+const deleteRider = async(req, res) => {
+    const { riderId } = req.body;
+
+    if(!riderId){
+        return res.status(400).json({'message':'riderId required'});
+    }
+
+    const foundRider = await User.findOne({ _id: riderId, 'role.rider': 20}).exec();
+
+    console.log(foundRider);
+    if(!foundRider){
+        return res.status(500).json({'message':'Rider not found'});
+    }
+
+    try {
+        await User.deleteOne(
+            { _id: foundRider.id }
+        );
+        res.sendStatus(200);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 'message': err.message });
+    }
+
+};
 
 module.exports = {
     getRiders,
-    postRider
+    postRider,
+    deleteRider
 }
