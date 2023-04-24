@@ -31,6 +31,7 @@ app.use(
 app.use('/user/login', require('./user/login'));
 app.use('/user/registry', require('./user/registry'));
 app.use('/user/resetPassword', require('./user/resetPassword'));
+app.use('/user', require('./user/users'));
 
 // restaurants
 app.use('/restaurants', require('./restaurants/restaurants'));
