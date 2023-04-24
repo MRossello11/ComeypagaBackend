@@ -1,8 +1,14 @@
 const Order = require('../model/Order');
 const orderStates = require('../orderStates');
 
-// get all orders for rider menu (all non-delivered and 
-// filtering out the ones not assigned to the rider)
+// get all available orders (not assigned and in progress orders)
+const getOrders = async(req, res) => {
+    const orders = await Order.find({ riderId: null, 'state.number': orderStates.orderStates.inProgressNumber }).exec();
+
+    res.status(200).json(orders);
+}
+
+// get all orders assigned to a rider (that haven't been delivered)
 const getOrdersRider = async(req, res) => {
     const { riderId } = req.body;
     
@@ -11,7 +17,7 @@ const getOrdersRider = async(req, res) => {
     }
 
     // get all non-delivered orders assigned to a rider
-    const riderOrders = await Order.find({ riderId: riderId, state: { number: { $ne: orderStates.deliveredNumber } } }).exec();
+    const riderOrders = await Order.find({ riderId: riderId, 'state.number': { $ne: orderStates.deliveredNumber } }).exec();
 
     // get all orders in progress (without a rider)
     const allOrders = await Order.find({ state: orderStates.inProgress });
@@ -54,6 +60,7 @@ const postOrderState = async(req, res) => {
 }
 
 module.exports = {
+    getOrders,
     getOrdersRider,
     postOrderState
 }

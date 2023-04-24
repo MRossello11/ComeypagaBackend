@@ -3,6 +3,9 @@ var router = express.Router();
 const userOrderController = require('./controller/userOrderController')
 const riderOrderController = require('./controller/riderOrderController')
 
+router.route('/')
+    .get(riderOrderController.getOrders)
+;
 router.route('/user')
     .get(userOrderController.getOrdersUser)
     .put(userOrderController.putOrder)
