@@ -44,6 +44,9 @@ const handleRegistry = async(req, res) => {
                 street,
                 town
             },
+            role: {
+                user: 10
+            },
             password
         });
 
