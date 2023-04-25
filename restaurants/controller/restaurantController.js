@@ -1,4 +1,5 @@
 const Restaurant = require('../model/Restaurant');
+const verifyAddress = require('../../config/verifyAddress');
 
 // get all restaurants
 const getRestaurants = async(req,res) => {
@@ -18,8 +19,7 @@ const putRestaurant = async(req, res) => {
         reviewStars,
         phone,
         email,
-        street,
-        town,
+        address,
         picture,
         menu
     } = req.body;
@@ -30,10 +30,12 @@ const putRestaurant = async(req, res) => {
         !typology || 
         !reviewStars || 
         !phone || 
-        !email || 
-        !street || 
-        !town
+        !email
     ){
+        return res.sendStatus(400);
+    }
+
+    if(!verifyAddress(address)){
         return res.sendStatus(400);
     }
 
@@ -63,10 +65,7 @@ const putRestaurant = async(req, res) => {
             reviewStars,
             phone,
             email,
-            address: {
-                street,
-                town
-            },
+            address,
             restaurantPicture,
             restaurantMenu
         });
