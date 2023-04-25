@@ -4,7 +4,7 @@ const verifyRoles = (...allowedRoles) => {
         if (!req?.session.userRole) return res.sendStatus(401);
         const rolesArray = [...allowedRoles];
         // check if the user's roles are sufficient
-        const result = req.session.userRole.map(role => rolesArray.includes(role)).find(val => val === true);
+        const result = rolesArray.includes(req.session.userRole.role);
         if (!result) return res.sendStatus(401);
         // if everything is ok, go to next function
         next();

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const roles = require('../../config/roles');
 
 const userSchema = new Schema({
     username:{
@@ -41,15 +42,8 @@ const userSchema = new Schema({
         required: true
     },
     role: {
-        user: { // 10
-            type: Number
-        },
-        rider: { // 20
-            type: Number,
-        },
-        admin: { // 30
-            type: Number,
-        }
+        type: String,
+        default: roles.USER
     }
 });
 
