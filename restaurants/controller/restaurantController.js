@@ -30,12 +30,9 @@ const putRestaurant = async(req, res) => {
         !typology || 
         !reviewStars || 
         !phone || 
-        !email
+        !email ||
+        !verifyAddress(address)
     ){
-        return res.sendStatus(400);
-    }
-
-    if(!verifyAddress(address)){
         return res.sendStatus(400);
     }
 
