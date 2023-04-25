@@ -8,15 +8,15 @@ const roles = require('../config/roles');
 router.route('/')
     // restaurant list
     .get(restaurantController.getRestaurants)
-    .post(verifyRoles(roles.Admin), restaurantController.postRestaurant)
-    .put(verifyRoles(roles.Admin), restaurantController.putRestaurant)
-    .delete(verifyRoles(roles.Admin), restaurantController.deleteRestaurant)
+    .post(verifyRoles(roles.ADMIN), restaurantController.postRestaurant)
+    .put(verifyRoles(roles.ADMIN), restaurantController.putRestaurant)
+    .delete(verifyRoles(roles.ADMIN), restaurantController.deleteRestaurant)
 ;
 
 router.route('/menu')
-    .put(verifyRoles(roles.Admin), menuController.putPlate)
-    .post(verifyRoles(roles.Admin), menuController.postPlate)
-    .delete(verifyRoles(roles.Admin), menuController.deletePlate)
+    .put(verifyRoles(roles.ADMIN), menuController.putPlate)
+    .post(verifyRoles(roles.ADMIN), menuController.postPlate)
+    .delete(verifyRoles(roles.ADMIN), menuController.deletePlate)
 ;
 
 module.exports = router;
