@@ -24,6 +24,7 @@ const putRestaurant = async(req, res) => {
         menu
     } = req.body;
 
+    // verify fields
     if(
         !name ||
         !foodType || 

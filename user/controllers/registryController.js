@@ -1,4 +1,5 @@
 const User = require('../model/User');
+const verifyAddress = require('../../config/verifyAddress');
 
 const handleRegistry = async(req, res) => {
     const { 
@@ -8,11 +9,11 @@ const handleRegistry = async(req, res) => {
         birthDate,
         phone,
         email,
-        street,
-        town,
+        address,
         password
     } = req.body;
 
+    // verify fields
     if(
         !username ||
         !firstname ||
@@ -20,8 +21,7 @@ const handleRegistry = async(req, res) => {
         !birthDate ||
         !phone ||
         !street ||
-        !email ||
-        !town ||
+        !verifyAddress(address) || 
         !password
     ) {
         return res.sendStatus(400);
