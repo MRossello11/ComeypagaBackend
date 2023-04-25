@@ -2,20 +2,22 @@ var express = require('express');
 var router = express.Router();
 const userOrderController = require('./controller/userOrderController')
 const riderOrderController = require('./controller/riderOrderController')
+const verifyRoles = require('../config/verifyRoles');
+const roles = require('../config/roles');
 
 router.route('/')
-    .get(riderOrderController.getOrders)
+    .get(verifyRoles(roles.RIDER), riderOrderController.getOrders)
 ;
 router.route('/user')
-    .get(userOrderController.getOrdersUser)
-    .put(userOrderController.putOrder)
-    .post(userOrderController.postOrderPlates)
-    .delete(userOrderController.deleteOrder)
+    .get(verifyRoles(roles.USER), userOrderController.getOrdersUser)
+    .put(verifyRoles(roles.USER), userOrderController.putOrder)
+    .post(verifyRoles(roles.USER), userOrderController.postOrderPlates)
+    .delete(verifyRoles(roles.USER), userOrderController.deleteOrder)
 ;
 
 router.route('/rider')
-    .get(riderOrderController.getOrdersRider)
-    .post(riderOrderController.postOrderState)
+    .get(verifyRoles(roles.RIDER), riderOrderController.getOrdersRider)
+    .post(verifyRoles(roles.RIDER), riderOrderController.postOrderState)
 ;
 
 module.exports = router
