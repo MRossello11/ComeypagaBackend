@@ -10,7 +10,9 @@ const handleResetPassword = async(req, res) => {
     const foundUser = await User.findOne({ username: username }).exec();
 
     if(!foundUser){
-        return res.status(500).json({'message':'User not found'});
+        return res.status(500).json({
+            'message':'User not found'
+        });
     }
 
     try{
@@ -19,9 +21,13 @@ const handleResetPassword = async(req, res) => {
             { $set: { "password": newPassword } }
         );
 
-        res.sendStatus(200);
+        res.status(200).json({
+            'message':'Password changed'
+        });
     } catch(err){
-        res.sendStatus(500);
+        res.status(500).json({
+            'message':'An error occurred changing the password'
+        });
     }
 }
 
