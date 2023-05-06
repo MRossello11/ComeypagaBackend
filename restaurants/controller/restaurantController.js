@@ -1,5 +1,5 @@
 const Restaurant = require('../model/Restaurant');
-const verifyAddress = require('../../config/verifyAddress');
+const { verifyAddress } = require('../../config/verifyAddress');
 
 // get all restaurants
 const getRestaurants = async(req,res) => {
