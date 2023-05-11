@@ -1,5 +1,5 @@
 const constants = {
-    loggedCookieSecret:'user is logged in',
+    loggedCookieSecret:'userLogged',
     userRoleCookieSecret:'userRole'
 };
 

@@ -56,7 +56,7 @@ const restaurantSchema = new Schema({
                 required: true
             },
             price: {
-                type: MongoDB.Decimal128,
+                type: String,
                 required: true
             },
             type: { // entrante, principal, bebida...

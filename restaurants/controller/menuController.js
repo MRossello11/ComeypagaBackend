@@ -37,10 +37,10 @@ const putPlate = async(req, res) => {
             { $set: { menu: foundRestaurant.menu } }
         )
 
-        res.sendStatus(200);
+        res.status(200).json({ 'message': `Plate ${plateName} created` });;
     } catch (err) {
         console.error(err);
-        res.status(500).json({ 'message': err.message });
+        res.status(500).json({ 'message': "An error occurred creating the plate" });
     }
 
 }
@@ -97,10 +97,10 @@ const postPlate = async(req, res) => {
                 }
             }
         )
-        res.sendStatus(200);
+        res.status(200).json({ 'message': "Plate modified" });;
     } catch(err){
         console.error(err);
-        res.status(500).json({ 'message': err.message });
+        res.status(500).json({ 'message': "An error occurred modifying the plate" });
     }
 
 }

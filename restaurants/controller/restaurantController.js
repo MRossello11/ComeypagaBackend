@@ -3,11 +3,14 @@ const { verifyAddress } = require('../../config/verifyAddress');
 
 // get all restaurants
 const getRestaurants = async(req,res) => {
+    console.log(req.session);
+    console.log(req.session.userRole);
+    console.log(req.session.userLogged);
     const restaurants = await Restaurant.find().exec();
 
     if(!restaurants) return res.sendStatus(204);
 
-    res.status(200).json(restaurants);
+    res.status(200).json({ "restaurants": restaurants });
 }
 
 // create new restaurant
@@ -34,12 +37,13 @@ const putRestaurant = async(req, res) => {
         !email ||
         !verifyAddress(address)
     ){
+        console.log("Not valid")
         return res.sendStatus(400);
     }
 
     const duplicate = await Restaurant.findOne({ name: name }).exec();
 
-    if(duplicate) return res.sendStatus(409);
+    if(duplicate) return res.status(409).json({ 'message': "Restaurant already exists" });;
 
     // if no duplicate found, create restaurant
     try{
@@ -70,9 +74,9 @@ const putRestaurant = async(req, res) => {
 
         console.log(result);
 
-        res.status(201).json({ 'success': `New restaurant ${name} created!` });
+        res.status(201).json({ 'message': `New restaurant ${name} created!` });
     } catch(err){
-        res.status(500).json({ 'message': err.message });
+        res.status(500).json({ 'message': "An error occurred creating the restaurant" });
     }
 }
 
@@ -85,8 +89,7 @@ const postRestaurant = async(req, res) => {
         reviewStars,
         phone,
         email,
-        street,
-        town,
+        address,
         picture,
         menu
     } = req.body;
@@ -101,7 +104,10 @@ const postRestaurant = async(req, res) => {
         return res.status(500).json({'message':'Restaurant not found'});
     }
 
+
     try{
+        const street = address.street;
+        const town = address.town;
         await Restaurant.updateOne(
             { _id: foundRestaurant.id },
             {
@@ -113,15 +119,15 @@ const postRestaurant = async(req, res) => {
                     phone: phone ? phone : foundRestaurant.phone,
                     email: email ? email : foundRestaurant.email,
                     address: {
-                        street: street ? street : foundRestaurant.street,
-                        town: town ? town : foundRestaurant.town
+                        street: street ? street : foundRestaurant.address.street,
+                        town: town ? town : foundRestaurant.address.town
                     },
                     picture: picture ? picture : foundRestaurant.picture,
                     menu: menu ? menu : foundRestaurant.menu
                 }
             }
         );
-        res.sendStatus(200);
+        res.status(200).json({'message':'Restaurant modified'});;
     } catch(err){
         console.error(err);
         res.status(500).json({ 'message': err.message });
@@ -142,10 +148,10 @@ const deleteRestaurant = async(req, res) => {
         await Restaurant.deleteOne(
             { _id: foundRestaurant.id }
         );
-        res.sendStatus(200);
+        res.status(200).json({ 'message': "Restaurant deleted" });;
     } catch (err) {
         console.error(err);
-        res.status(500).json({ 'message': err.message });
+        res.status(500).json({ 'message': "An error occurred deleting the restaurant" });
     }
 
 }

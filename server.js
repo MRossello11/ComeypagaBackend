@@ -1,7 +1,7 @@
 const express = require('express');
+var session = require('express-session')
 const app = express();
 const port = 3000;
-const session = require("express-session");
 const dbConnection = require('./config/dbConnection');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
@@ -15,7 +15,7 @@ app.use(
   session({
     secret: constants.loggedCookieSecret,
     resave: false,
-    saveUnitialized: false
+    saveUninitialized: true
   })
 );
 
@@ -23,7 +23,7 @@ app.use(
   session({
     secret: constants.userRoleCookieSecret,
     resave: false,
-    saveUnitialized: false
+    saveUninitialized: true
   })
 );
 
