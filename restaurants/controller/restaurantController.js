@@ -3,9 +3,12 @@ const { verifyAddress } = require('../../config/verifyAddress');
 
 // get all restaurants
 const getRestaurants = async(req,res) => {
-    const restaurants = await Restaurant.find().exec();
+    const restaurants = await Restaurant.find(
+        { isDeleted: false },
+        { menu: { $elemMatch: { isDeleted: false } }, isDeleted: false },
+    ).exec();
 
-    if(!restaurants) return res.sendStatus(204);
+    if (!restaurants) return res.sendStatus(204);
 
     res.status(200).json({ "restaurants": restaurants });
 }
@@ -38,7 +41,7 @@ const putRestaurant = async(req, res) => {
         return res.sendStatus(400);
     }
 
-    const duplicate = await Restaurant.findOne({ name: name }).exec();
+    const duplicate = await Restaurant.findOne({ name: name, isDeleted: false }).exec();
 
     if(duplicate) return res.status(409).json({ 'message': "Restaurant already exists" });;
 
@@ -142,8 +145,9 @@ const deleteRestaurant = async(req, res) => {
     }
 
     try {
-        await Restaurant.deleteOne(
-            { _id: foundRestaurant.id }
+        await Restaurant.updateOne(
+            { _id: foundRestaurant.id },
+            { $set: { isDeleted: true }}
         );
         res.status(200).json({ 'message': "Restaurant deleted" });;
     } catch (err) {

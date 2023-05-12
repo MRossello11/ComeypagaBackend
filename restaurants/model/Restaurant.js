@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const MongoDB = require('bson');
 
 const restaurantSchema = new Schema({
     name:{
@@ -41,10 +40,6 @@ const restaurantSchema = new Schema({
         type: String,
         required: false
     },
-    // price: { // is computed
-    //     type: String,
-    //     required: true
-    // }
     menu: [
         {
             plateName: {
@@ -62,9 +57,17 @@ const restaurantSchema = new Schema({
             type: { // entrante, principal, bebida...
                 type: String,
                 required: true
+            },
+            isDeleted: {
+                type: Boolean,
+                default: false
             }
         }
-    ]
+    ],
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 });
 
 module.exports = mongoose.model('Restaurant', restaurantSchema)

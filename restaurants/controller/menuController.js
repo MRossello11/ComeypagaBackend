@@ -112,12 +112,12 @@ const deletePlate = async(req,res) => {
     } = req.body;
 
     try{
-        const foundPlate = await Restaurant.findOneAndUpdate({ _id: restaurantId },
-            { $pull: { menu: { _id: plateId } } },
+        // soft delete plate
+        await Restaurant.findOneAndUpdate(
+            { _id: restaurantId, "menu._id": plateId },
+            { $set: { "menu.$.isDeleted": true } },
             { new: true }
-            ).exec();
-
-        console.log(foundPlate);
+        ).exec();
 
         res.sendStatus(200);
     } catch(err){
