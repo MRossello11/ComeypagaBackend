@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const roles = require('../../config/roles');
+const constants = require('../../config/constants').modelConstants;
 
 const userSchema = new Schema({
     username:{
@@ -44,6 +45,10 @@ const userSchema = new Schema({
     role: {
         type: String,
         default: roles.USER
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
     }
 });
 

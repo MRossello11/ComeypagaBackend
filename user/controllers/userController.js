@@ -1,8 +1,9 @@
 const User = require('../model/User');
+const roles = require('../../config/roles');
 
 // get all rider users
 const getRiders = async(req, res) => {
-    const riders = await User.find({ 'role.rider': 20 }).exec();
+    const riders = await User.find({ role: roles.RIDER, isDeleted: false }).exec();
 
     res.status(200).json(riders);
 };
@@ -77,7 +78,7 @@ const deleteRider = async(req, res) => {
         return res.status(400).json({'message':'riderId required'});
     }
 
-    const foundRider = await User.findOne({ _id: riderId, 'role.rider': 20}).exec();
+    const foundRider = await User.findOne({ _id: riderId, role: roles.RIDER}).exec();
 
     console.log(foundRider);
     if(!foundRider){
@@ -85,8 +86,11 @@ const deleteRider = async(req, res) => {
     }
 
     try {
-        await User.deleteOne(
-            { _id: foundRider.id }
+        await User.updateOne(
+            { _id: foundRider.id },
+            {
+                $set: { isDeleted: true }
+            }
         );
         res.sendStatus(200);
     } catch (error) {
