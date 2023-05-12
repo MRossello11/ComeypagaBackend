@@ -27,7 +27,7 @@ const handleRegistry = async(req, res) => {
         return res.sendStatus(400);
     }
 
-    const duplicate = await User.findOne({ username: username }).exec();
+    const duplicate = await User.findOne({ username: username, isDeleted: false }).exec();
     if(duplicate) return res.status(409).json({"message":"Username taken"});
 
     // if no duplicate found, create user
