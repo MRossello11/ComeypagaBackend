@@ -7,7 +7,7 @@ const port = 3000;
 const dbConnection = require('./config/dbConnection');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const constants = require('./config/constants');
+const cookieConstants = require('./config/constants').cookieConstants;
 
 dbConnection();
 
@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   session({
-    secret: constants.loggedCookieSecret,
+    secret: cookieConstants.loggedCookieSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -27,7 +27,7 @@ app.use(
 
 app.use(
   session({
-    secret: constants.userRoleCookieSecret,
+    secret: cookieConstants.userRoleCookieSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
