@@ -17,8 +17,8 @@ const handleLogin = async(req, res) => {
     const matchingPassword = password == foundUser.password;
     if(matchingPassword){
         // set 'user logged' session cookie value
-        req.session.userLogged = { username };
-        req.session.userRole = { role: foundUser.role };
+        req.session.userLogged = username;
+        req.session.userRole = foundUser.role;
         res.status(200).json(foundUser);
     } else {
         res.status(401).json({ 'message':'Username or password incorrect'});

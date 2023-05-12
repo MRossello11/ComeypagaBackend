@@ -1,5 +1,7 @@
 const express = require('express');
+const https = require('https');
 var session = require('express-session')
+const fs = require("fs");
 const app = express();
 const port = 3000;
 const dbConnection = require('./config/dbConnection');
@@ -15,7 +17,11 @@ app.use(
   session({
     secret: constants.loggedCookieSecret,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    cookie: {
+      sameSite: 'strict',
+      secure: true
+    }
   })
 );
 
@@ -23,7 +29,11 @@ app.use(
   session({
     secret: constants.userRoleCookieSecret,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    cookie: {
+      sameSite: 'strict',
+      secure: true
+    }
   })
 );
 
@@ -55,7 +65,15 @@ app.use((err, req, res, next) => {
 
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB')
-  app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+  https
+  .createServer(
+    {
+      key: fs.readFileSync("key.pem"),
+      cert: fs.readFileSync("cert.pem"),
+    },
+    app
+  )
+  .listen(port, () => {
+    console.log(`server is runing at port ${port}`);
   })
 });

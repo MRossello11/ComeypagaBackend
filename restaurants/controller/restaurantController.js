@@ -3,9 +3,6 @@ const { verifyAddress } = require('../../config/verifyAddress');
 
 // get all restaurants
 const getRestaurants = async(req,res) => {
-    console.log(req.session);
-    console.log(req.session.userRole);
-    console.log(req.session.userLogged);
     const restaurants = await Restaurant.find().exec();
 
     if(!restaurants) return res.sendStatus(204);
