@@ -82,7 +82,7 @@ const putRestaurant = async(req, res) => {
 
 const postRestaurant = async(req, res) => {
     const {
-        id,
+        _id,
         name,
         foodType,
         typology,
@@ -93,12 +93,13 @@ const postRestaurant = async(req, res) => {
         picture,
         menu
     } = req.body;
+    console.log(req.body);
 
-    if(!id){
+    if(!_id){
         return res.sendStatus(400);
     }
 
-    const foundRestaurant = await Restaurant.findOne({ _id: id }).exec();
+    const foundRestaurant = await Restaurant.findOne({ _id }).exec();
 
     if(!foundRestaurant){
         return res.status(500).json({'message':'Restaurant not found'});
@@ -108,8 +109,10 @@ const postRestaurant = async(req, res) => {
     try{
         const street = address.street;
         const town = address.town;
+
+        // update the non-null parameters
         await Restaurant.updateOne(
-            { _id: foundRestaurant.id },
+            { _id: foundRestaurant._id },
             {
                 $set: {
                     name: name ? name : foundRestaurant.name,
@@ -136,9 +139,9 @@ const postRestaurant = async(req, res) => {
 }
 
 const deleteRestaurant = async(req, res) => {
-    const { id } = req.body;
+    const _id = req.params.id;
 
-    const foundRestaurant = await Restaurant.findOne({ _id: id }).exec();
+    const foundRestaurant = await Restaurant.findOne({ _id }).exec();
 
     if(!foundRestaurant){
         return res.status(500).json({'message':'Restaurant not found'});
@@ -146,7 +149,7 @@ const deleteRestaurant = async(req, res) => {
 
     try {
         await Restaurant.updateOne(
-            { _id: foundRestaurant.id },
+            { _id: foundRestaurant._id },
             { $set: { isDeleted: true }}
         );
         res.status(200).json({ 'message': "Restaurant deleted" });;
