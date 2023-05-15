@@ -54,7 +54,7 @@ const restaurantSchema = new Schema({
                 type: String,
                 required: true
             },
-            type: { // entrante, principal, bebida...
+            type: { // starter, main (dish), drink, dessert...
                 type: String,
                 required: true
             },

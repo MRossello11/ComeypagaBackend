@@ -160,7 +160,24 @@ const deleteRestaurant = async(req, res) => {
 
 }
 
+const getRestaurant = async(req, res) => {
+    const _id = req.params.id;
+
+    if(!_id){
+        return res.sendStatus(400);
+    }
+
+    const foundRestaurant = await Restaurant.findOne({ _id }).exec();
+
+    if(!foundRestaurant){
+        return res.status(500).json({'message':'Restaurant not found'});
+    }
+
+    return res.status(200).json({ "restaurant": foundRestaurant });
+}
+
 module.exports = {
+    getRestaurant,
     getRestaurants,
     putRestaurant,
     postRestaurant,

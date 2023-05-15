@@ -12,6 +12,7 @@ router.route('/')
     .put(verifyRoles(roles.ADMIN), restaurantController.putRestaurant)
 ;
 router.route('/:id')
+    .get(restaurantController.getRestaurant)
     .delete(verifyRoles(roles.ADMIN), restaurantController.deleteRestaurant)
 ;
 
