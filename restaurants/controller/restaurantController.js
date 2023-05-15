@@ -72,9 +72,8 @@ const putRestaurant = async(req, res) => {
             restaurantMenu
         });
 
-        console.log(result);
 
-        res.status(201).json({ 'message': `New restaurant ${name} created!` });
+        res.status(201).json({ "restaurant": result});;
     } catch(err){
         res.status(500).json({ 'message': "An error occurred creating the restaurant" });
     }
@@ -130,7 +129,7 @@ const postRestaurant = async(req, res) => {
                 }
             }
         );
-        res.status(200).json({'message':'Restaurant modified'});;
+        res.status(200).json({ "restaurant": foundRestaurant});;
     } catch(err){
         console.error(err);
         res.status(500).json({ 'message': err.message });
