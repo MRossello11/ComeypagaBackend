@@ -37,7 +37,6 @@ const putRestaurant = async(req, res) => {
         !email ||
         !verifyAddress(address)
     ){
-        console.log("Not valid")
         return res.sendStatus(400);
     }
 
@@ -92,7 +91,6 @@ const postRestaurant = async(req, res) => {
         picture,
         menu
     } = req.body;
-    console.log(req.body);
 
     if(!_id){
         return res.sendStatus(400);
@@ -160,17 +158,23 @@ const deleteRestaurant = async(req, res) => {
 }
 
 const getRestaurant = async(req, res) => {
+    console.log("Get restaurant");
     const _id = req.params.id;
 
     if(!_id){
         return res.sendStatus(400);
     }
 
-    const foundRestaurant = await Restaurant.findOne({ _id }).exec();
+    const foundRestaurant = await Restaurant.findOne(
+        { _id, isDeleted: false },
+        { menu: { $elemMatch: { isDeleted: false } }, isDeleted: false }
+    ).exec();
 
     if(!foundRestaurant){
         return res.status(500).json({'message':'Restaurant not found'});
     }
+
+    console.log(foundRestaurant);
 
     return res.status(200).json({ "restaurant": foundRestaurant });
 }
