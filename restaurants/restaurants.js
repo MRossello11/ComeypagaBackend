@@ -19,7 +19,9 @@ router.route('/:id')
 router.route('/menu')
     .put(verifyRoles(roles.ADMIN), menuController.putPlate)
     .post(verifyRoles(roles.ADMIN), menuController.postPlate)
-    .delete(verifyRoles(roles.ADMIN), menuController.deletePlate)
+;
+router.route('/menu/deletePlate')
+    .post(verifyRoles(roles.ADMIN), menuController.deletePlate)
 ;
 
 module.exports = router;
