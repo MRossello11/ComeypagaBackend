@@ -1,5 +1,6 @@
 const Restaurant = require('../model/Restaurant');
 const { verifyAddress } = require('../../config/verifyAddress');
+const fs = require('fs');
 
 // get all restaurants
 const getRestaurants = async(req,res) => {
@@ -10,7 +11,23 @@ const getRestaurants = async(req,res) => {
 
     if (!restaurants) return res.sendStatus(204);
 
-    res.status(200).json({ "restaurants": restaurants });
+    // get images
+    const restaurantsWithImages = restaurants.map((restaurant) => {
+      if (fs.existsSync(restaurant.picture) && restaurant.picture.length != 0) {
+        const image = fs.readFileSync(restaurant.picture);
+        const base64Image = Buffer.from(image).toString('base64');
+        restaurant.picture = base64Image;
+      } else {
+        // default picture
+        const image = fs.readFileSync("./images/default_image.jpg");
+        const base64Image = Buffer.from(image).toString('base64');
+        restaurant.picture = base64Image;
+
+      }
+      return restaurant;
+    });
+
+    res.status(200).json({ "restaurants": restaurantsWithImages });
 }
 
 // create new restaurant
@@ -35,6 +52,7 @@ const putRestaurant = async(req, res) => {
         !reviewStars || 
         !phone || 
         !email ||
+        !picture ||
         !verifyAddress(address)
     ){
         return res.sendStatus(400);
@@ -44,6 +62,22 @@ const putRestaurant = async(req, res) => {
 
     if(duplicate) return res.status(409).json({ 'message': "Restaurant already exists" });;
 
+    // save picture
+    const imageBuffer = Buffer.from(picture, 'base64');
+
+    // Save the image to local storage
+    const imagesDir = "./images";
+    if (!fs.existsSync(imagesDir)) {
+        fs.mkdirSync(imagesDir);
+    }
+    const imagePath = `${imagesDir}/${name}_${new Date().getTime()}.jpeg`;
+    fs.writeFile(imagePath, imageBuffer, (err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error saving the image.');
+        }
+    });
+
     // if no duplicate found, create restaurant
     try{
         let restaurantMenu;
@@ -52,13 +86,7 @@ const putRestaurant = async(req, res) => {
         } else {
             restaurantMenu = menu
         }
-        let restaurantPicture;
-        if(!picture){
-            restaurantPicture = "";
-        } else {
-            restaurantPicture = picture
-        }
-
+        
         const result = await Restaurant.create({
             name,
             foodType,
@@ -67,7 +95,7 @@ const putRestaurant = async(req, res) => {
             phone,
             email,
             address,
-            restaurantPicture,
+            picture: imagePath,
             restaurantMenu
         });
 
@@ -91,6 +119,7 @@ const postRestaurant = async(req, res) => {
         picture,
         menu
     } = req.body;
+    console.log("Post restaurant");
 
     if(!_id){
         return res.sendStatus(400);
@@ -102,6 +131,21 @@ const postRestaurant = async(req, res) => {
         return res.status(500).json({'message':'Restaurant not found'});
     }
 
+    // save picture
+    const imageBuffer = Buffer.from(picture, 'base64');
+
+    // Save the image to local storage
+    const imagesDir = "./images";
+    if (!fs.existsSync(imagesDir)) {
+        fs.mkdirSync(imagesDir);
+    }
+    const imagePath = `${imagesDir}/${name}_${new Date().getTime()}.jpeg`;
+    fs.writeFile(imagePath, imageBuffer, (err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error saving the image.');
+        }
+    });
 
     try{
         const street = address.street;
@@ -122,7 +166,7 @@ const postRestaurant = async(req, res) => {
                         street: street ? street : foundRestaurant.address.street,
                         town: town ? town : foundRestaurant.address.town
                     },
-                    picture: picture ? picture : foundRestaurant.picture,
+                    picture: imagePath ? imagePath : foundRestaurant.picture,
                     menu: menu ? menu : foundRestaurant.menu
                 }
             }
@@ -173,6 +217,12 @@ const getRestaurant = async(req, res) => {
     if(!foundRestaurant){
         return res.status(500).json({'message':'Restaurant not found'});
     }
+
+    // get image
+    const image = fs.readFileSync(foundRestaurant.picture);
+    const base64Image = Buffer.from(image).toString('base64');
+
+    foundRestaurant.picture = base64Image;
 
     console.log(foundRestaurant);
 
