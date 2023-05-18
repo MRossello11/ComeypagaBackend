@@ -11,7 +11,8 @@ const handleRegistry = async(req, res) => {
         phone,
         email,
         address,
-        password
+        password,
+        role
     } = req.body;
 
     // verify fields
@@ -33,6 +34,15 @@ const handleRegistry = async(req, res) => {
     // if no duplicate found, create user
     const street = address.street;
     const town = address.town;
+
+    // set role
+    let userRole;
+    if(role){
+        userRole = role;
+    } else {
+        userRole = roles.USER;
+    }
+
     try {
         // create and store the new user
         const result = await User.create({
@@ -46,7 +56,7 @@ const handleRegistry = async(req, res) => {
                 street,
                 town
             },
-            role: roles.USER,
+            role: userRole,
             password
         });
 
