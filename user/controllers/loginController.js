@@ -11,7 +11,7 @@ const handleLogin = async(req, res) => {
 
     // search user
     const foundUser = await User.findOne({ username: username }).exec();
-    if (!foundUser) return res.status(401).json({'message':'User or password incorrect'}); //Unauthorized 
+    if (!foundUser) return res.status(401).json({'message':'User or password incorrect'}); // Unauthenticated
 
     // check password
     const matchingPassword = password == foundUser.password;
@@ -21,7 +21,7 @@ const handleLogin = async(req, res) => {
         req.session.userRole = foundUser.role;
         res.status(200).json(foundUser);
     } else {
-        res.status(401).json({ 'message':'Username or password incorrect'});
+        res.status(401).json({ 'message':'Username or password incorrect'}); // Unauthenticated
     }
 }
 
