@@ -115,8 +115,7 @@ const deletePlate = async(req,res) => {
         // soft delete plate
         await Restaurant.findOneAndUpdate(
             { _id: restaurantId, "menu._id": plateId },
-            { $set: { "menu.$.isDeleted": true } },
-            { new: true }
+            { $set: { "menu.$.isDeleted": true } }
         ).exec();
 
         res.status(200).json({"message":"Plate deleted"});

@@ -40,8 +40,7 @@ const putRestaurant = async(req, res) => {
         phone,
         email,
         address,
-        picture,
-        menu
+        picture
     } = req.body;
 
     // verify fields
@@ -80,13 +79,6 @@ const putRestaurant = async(req, res) => {
 
     // if no duplicate found, create restaurant
     try{
-        let restaurantMenu;
-        if(!menu){
-            restaurantMenu = [];
-        } else {
-            restaurantMenu = menu
-        }
-        
         const result = await Restaurant.create({
             name,
             foodType,
@@ -96,7 +88,7 @@ const putRestaurant = async(req, res) => {
             email,
             address,
             picture: imagePath,
-            restaurantMenu
+            menu: []
         });
 
 
@@ -116,8 +108,7 @@ const postRestaurant = async(req, res) => {
         phone,
         email,
         address,
-        picture,
-        menu
+        picture
     } = req.body;
     console.log("Post restaurant");
 
@@ -166,8 +157,7 @@ const postRestaurant = async(req, res) => {
                         street: street ? street : foundRestaurant.address.street,
                         town: town ? town : foundRestaurant.address.town
                     },
-                    picture: imagePath ? imagePath : foundRestaurant.picture,
-                    menu: menu ? menu : foundRestaurant.menu
+                    picture: imagePath ? imagePath : foundRestaurant.picture
                 }
             }
         );
@@ -210,23 +200,35 @@ const getRestaurant = async(req, res) => {
     }
 
     const foundRestaurant = await Restaurant.findOne(
-        { _id, isDeleted: false },
-        { menu: { $elemMatch: { isDeleted: false } }, isDeleted: false }
+        { _id, isDeleted: false }
     ).exec();
 
     if(!foundRestaurant){
         return res.status(500).json({'message':'Restaurant not found'});
     }
 
+    const filteredMenu = foundRestaurant.menu.filter((plate) => !plate.isDeleted);
+
     // get image
     const image = fs.readFileSync(foundRestaurant.picture);
     const base64Image = Buffer.from(image).toString('base64');
 
-    foundRestaurant.picture = base64Image;
+    const modifiedRestaurant = {
+        _id: foundRestaurant._id,
+        name: foundRestaurant.name,
+        foodType: foundRestaurant.foodType,
+        typology: foundRestaurant.typology,
+        reviewStars: foundRestaurant.reviewStars,
+        phone: foundRestaurant.phone,
+        email: foundRestaurant.email,
+        address: foundRestaurant.address,
+        picture: base64Image,
+        menu: filteredMenu,
+    };
 
-    console.log(foundRestaurant);
+    console.log(modifiedRestaurant);
 
-    return res.status(200).json({ "restaurant": foundRestaurant });
+    return res.status(200).json({ "restaurant": modifiedRestaurant });
 }
 
 module.exports = {
