@@ -67,7 +67,7 @@ const postRider = async(req, res) =>{
 };
 
 const deleteRider = async(req, res) => {
-    const { _id } = req.body;
+    const _id = req.params.id;
 
     if(!_id){
         return res.status(400).json({'message':'riderId required'});
