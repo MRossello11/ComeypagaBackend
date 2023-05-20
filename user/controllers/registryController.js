@@ -1,4 +1,6 @@
 const User = require('../model/User');
+const { verifyAddress } = require('../../config/verifyAddress');
+const roles = require('../../config/roles');
 
 const handleRegistry = async(req, res) => {
     const { 
@@ -8,29 +10,39 @@ const handleRegistry = async(req, res) => {
         birthDate,
         phone,
         email,
-        street,
-        town,
-        password
+        address,
+        password,
+        role
     } = req.body;
 
+    // verify fields
     if(
         !username ||
         !firstname ||
         !lastname ||
         !birthDate ||
         !phone ||
-        !street ||
-        !email ||
-        !town ||
+        !verifyAddress(address) || 
         !password
     ) {
         return res.sendStatus(400);
     }
 
-    const duplicate = await User.findOne({ username: username }).exec();
-    if(duplicate) return res.sendStatus(409);
+    const duplicate = await User.findOne({ username: username, isDeleted: false }).exec();
+    if(duplicate) return res.status(409).json({"message":"Username taken"});
 
     // if no duplicate found, create user
+    const street = address.street;
+    const town = address.town;
+
+    // set role
+    let userRole;
+    if(role){
+        userRole = role;
+    } else {
+        userRole = roles.USER;
+    }
+
     try {
         // create and store the new user
         const result = await User.create({
@@ -44,15 +56,13 @@ const handleRegistry = async(req, res) => {
                 street,
                 town
             },
-            role: {
-                user: 10
-            },
+            role: userRole,
             password
         });
 
         console.log(result);
 
-        res.status(201).json({ 'success': `New user ${username} created!` });
+        res.status(201).json({ 'message': `New user ${username} created!` });
     } catch (err) {
         res.status(500).json({ 'message': err.message });
     }

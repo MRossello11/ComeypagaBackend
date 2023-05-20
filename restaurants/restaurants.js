@@ -10,13 +10,18 @@ router.route('/')
     .get(restaurantController.getRestaurants)
     .post(verifyRoles(roles.ADMIN), restaurantController.postRestaurant)
     .put(verifyRoles(roles.ADMIN), restaurantController.putRestaurant)
+;
+router.route('/:id')
+    .get(restaurantController.getRestaurant)
     .delete(verifyRoles(roles.ADMIN), restaurantController.deleteRestaurant)
 ;
 
 router.route('/menu')
     .put(verifyRoles(roles.ADMIN), menuController.putPlate)
     .post(verifyRoles(roles.ADMIN), menuController.postPlate)
-    .delete(verifyRoles(roles.ADMIN), menuController.deletePlate)
+;
+router.route('/menu/deletePlate')
+    .post(verifyRoles(roles.ADMIN), menuController.deletePlate)
 ;
 
 module.exports = router;

@@ -7,6 +7,9 @@ const roles = require('../config/roles');
 router.route('/rider')
     .get(verifyRoles(roles.ADMIN), userController.getRiders)
     .post(verifyRoles(roles.ADMIN), userController.postRider)
+;
+
+router.route('/rider/:id')
     .delete(verifyRoles(roles.ADMIN), userController.deleteRider)
 ;
 

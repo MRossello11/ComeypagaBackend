@@ -1,43 +1,42 @@
 const User = require('../model/User');
+const roles = require('../../config/roles');
 
 // get all rider users
 const getRiders = async(req, res) => {
-    const riders = await User.find({ 'role.rider': 20 }).exec();
+    const riders = await User.find({ role: roles.RIDER, isDeleted: false }).exec();
 
-    res.status(200).json(riders);
+    res.status(200).json({ 'riders':riders });
 };
 
 // modify a rider user
 const postRider = async(req, res) =>{
     const { 
-        riderId,
+        _id,
         username,
         firstname,
         lastname,
         birthDate,
         phone,
         email,
-        street,
-        town,
+        address,
         password
     } = req.body;
 
     if(
-        !riderId ||
+        !_id ||
         !username ||
         !firstname ||
         !lastname ||
         !birthDate ||
         !phone ||
-        !street ||
         !email ||
-        !town ||
+        !address ||
         !password
     ) {
         return res.sendStatus(400);
     }
 
-    const foundRider = await User.findOne({ _id: riderId }).exec();
+    const foundRider = await User.findOne({ _id }).exec();
 
     if(!foundRider){
         return res.status(500).json({ 'message':'Rider not found' });
@@ -45,7 +44,7 @@ const postRider = async(req, res) =>{
 
     try {
         await User.updateOne(
-            { _id: foundRider.id },
+            { _id: foundRider._id },
             {
                 $set: {
                     username: username,
@@ -54,16 +53,13 @@ const postRider = async(req, res) =>{
                     birthDate: birthDate,
                     phone: phone,
                     email: email,
-                    address: {
-                        street: street,
-                        town: town
-                    },
+                    address: address,
                     password: password
                 }
             }
         )
         
-        res.sendStatus(200);
+        res.status(200).json({ 'message':'Rider modified'});
     } catch (error) {
         console.error(error);
         res.status(500).json({ 'message': err.message });
@@ -71,13 +67,13 @@ const postRider = async(req, res) =>{
 };
 
 const deleteRider = async(req, res) => {
-    const { riderId } = req.body;
+    const _id = req.params.id;
 
-    if(!riderId){
+    if(!_id){
         return res.status(400).json({'message':'riderId required'});
     }
 
-    const foundRider = await User.findOne({ _id: riderId, 'role.rider': 20}).exec();
+    const foundRider = await User.findOne({ _id: _id, role: roles.RIDER}).exec();
 
     console.log(foundRider);
     if(!foundRider){
@@ -85,10 +81,13 @@ const deleteRider = async(req, res) => {
     }
 
     try {
-        await User.deleteOne(
-            { _id: foundRider.id }
+        await User.updateOne(
+            { _id: foundRider._id },
+            {
+                $set: { isDeleted: true }
+            }
         );
-        res.sendStatus(200);
+        res.status(200).json({ 'message':'Rider deleted'});
     } catch (error) {
         console.error(error);
         res.status(500).json({ 'message': err.message });

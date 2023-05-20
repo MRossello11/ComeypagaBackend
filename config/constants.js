@@ -1,6 +1,14 @@
-const constants = {
-    loggedCookieSecret:'user is logged in',
+const cookieConstants = {
+    loggedCookieSecret:'userLogged',
     userRoleCookieSecret:'userRole'
 };
 
-module.exports = constants
+const modelConstants = {
+    enabled: "Enabled",
+    disabled: "Disabled",
+};
+
+module.exports = {
+    cookieConstants,
+    modelConstants
+}

@@ -1,29 +1,39 @@
 const express = require('express');
+const https = require('https');
+var session = require('express-session')
+const fs = require("fs");
 const app = express();
 const port = 3000;
-const session = require("express-session");
 const dbConnection = require('./config/dbConnection');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const constants = require('./config/constants');
+const cookieConstants = require('./config/constants').cookieConstants;
 
 dbConnection();
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
 app.use(
   session({
-    secret: constants.loggedCookieSecret,
+    secret: cookieConstants.loggedCookieSecret,
     resave: false,
-    saveUnitialized: false
+    saveUninitialized: false,
+    cookie: {
+      sameSite: 'strict',
+      secure: true
+    }
   })
 );
 
 app.use(
   session({
-    secret: constants.userRoleCookieSecret,
+    secret: cookieConstants.userRoleCookieSecret,
     resave: false,
-    saveUnitialized: false
+    saveUninitialized: false,
+    cookie: {
+      sameSite: 'strict',
+      secure: true
+    }
   })
 );
 
@@ -55,7 +65,15 @@ app.use((err, req, res, next) => {
 
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB')
-  app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+  https
+  .createServer(
+    {
+      key: fs.readFileSync("key.pem"),
+      cert: fs.readFileSync("cert.pem"),
+    },
+    app
+  )
+  .listen(port, () => {
+    console.log(`server is runing at port ${port}`);
   })
 });
