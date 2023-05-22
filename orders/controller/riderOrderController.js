@@ -1,9 +1,9 @@
 const Order = require('../model/Order');
-const orderStates = require('../orderStates');
+const orderStates = require('../orderStates').orderStates;
 
 // get all available orders (not assigned and in progress orders)
 const getOrders = async(req, res) => {
-    const orders = await Order.find({ riderId: null, 'state.number': orderStates.orderStates.inProgressNumber }).exec();
+    const orders = await Order.find({ riderId: null, state: orderStates.inProgress }).exec();
 
     res.status(200).json(orders);
 }
@@ -16,8 +16,8 @@ const getOrdersRider = async(req, res) => {
         return res.sendStatus(400);
     }
 
-    // get all non-delivered orders assigned to a rider
-    const riderOrders = await Order.find({ riderId: riderId, 'state.number': { $ne: orderStates.deliveredNumber } }).exec();
+    // get all non-delivered and non-canceled dorders assigned to a rider
+    const riderOrders = await Order.find({ riderId: riderId, state: { $nin: [orderStates.delivered, orderStates.canceled] } }).exec();
 
     // get all orders in progress (without a rider)
     const allOrders = await Order.find({ state: orderStates.inProgress });
@@ -28,30 +28,30 @@ const getOrdersRider = async(req, res) => {
 // changes order state 
 const postOrderState = async(req, res) => {
     const { 
-        orderId,
+        _id,
         newState,
         riderId
     } = req.body;
 
-    if(!orderId || !newState || !riderId){
+    if(!_id || !newState || !riderId){
         return res.sendStatus(400);
     }
 
-    const order = await Order.findOne({ _id: orderId }).exec();
+    const order = await Order.findOne({ _id }).exec();
 
     if(!order){
         return res.status(500).json({'message':'Order not found'});
     }
 
-    if(newState <= order.state.number){
+    if(newState <= order.state){
         return res.status(400).json({'message':'Order status is not valid'})
     }
 
     const result = await Order.updateOne(
-        { _id: order.id},
+        { _id: order._id},
         { $set: 
             { 
-                state: { number: newState, description: orderStates.orderStatesList[newState] },
+                state: newState,
                 riderId: riderId
             }}
     );
