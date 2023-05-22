@@ -12,7 +12,7 @@ const getOrdersUser = async(req, res) => {
 
     const userOrders = await Order.find({ userId: userId, state: { $nin: [orderStates.delivered, orderStates.canceled] }}).exec();
 
-    res.json(userOrders);
+    res.status(200).json({'orders':userOrders});
 }
 
 // create or modify order
@@ -97,17 +97,15 @@ const postOrder = async(req, res) => {
 
 // delete order
 const deleteOrder = async(req,res) => {
-    const {
-        orderId
-    } = req.body;
+    const _id = req.params.id;
 
     // check attributes
-    if(!orderId){
+    if(!_id){
         return res.sendStatus(400);
     }
 
     // get order
-    const order = await Order.findOne({ _id: orderId }).exec();
+    const order = await Order.findOne({ _id }).exec();
 
     if(!order){
         return res.status(500).json({'message':'Order not found'});
@@ -119,15 +117,15 @@ const deleteOrder = async(req,res) => {
     }
 
     try {
-        // delete order    
-        await Order.deleteOne(
-            { _id: order.id }
+        // cancel order    
+        await Order.updateOne(
+            { _id: order._id },
+            { $set: { state: orderStates.canceled }}
         );
 
         res.sendStatus(200);
     } catch (error) {
-        console.error(error);
-        res.send(500).json({error:error})
+        res.send(500).json({'message':'An error occurred'})
     }
 }
 
