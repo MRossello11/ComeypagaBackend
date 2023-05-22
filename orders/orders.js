@@ -11,6 +11,8 @@ router.route('/')
 router.route('/user')
     .get(verifyRoles(roles.USER), userOrderController.getOrdersUser)
     .post(verifyRoles(roles.USER), userOrderController.postOrder)
+;
+router.route('/user/:id')
     .delete(verifyRoles(roles.USER), userOrderController.deleteOrder)
 ;
 
