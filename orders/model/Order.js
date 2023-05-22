@@ -4,13 +4,48 @@ const MongoDB = require('bson');
 const orderStates = require('../orderStates').orderStates;
 
 const orderSchema = new Schema({
-    plates: [
+    shippingAddress: {
+        street: {
+            type: String,
+            required: true
+        },
+        town: {
+            type: String,
+            required: true
+        }
+    },
+    state: {
+        type: Number,
+        default: orderStates.created
+    },
+    arrivalTime: {
+        type: Date,
+        required: false,
+        default: null
+    },
+    restaurantId: {
+        type: MongoDB.ObjectId,
+        required: true
+    },
+    restaurantName : {
+        type: String,
+        required: true
+    },
+    userId: {
+        type: MongoDB.ObjectId,
+        required: true
+    },
+    riderId:{ 
+        type: MongoDB.ObjectId,
+        default: null
+    },
+    orderLines: [
         {
-            id: {
+            plateId: {
                 type: MongoDB.ObjectId,
                 required: true
             },
-            name: {
+            plateName: {
                 type: String,
                 required: true
             },
@@ -23,44 +58,7 @@ const orderSchema = new Schema({
                 required: true
             }
         }
-    ],
-    shippingAddress: {
-        street: {
-            type: String,
-            required: true
-        },
-        town: {
-            type: String,
-            required: true
-        }
-    },
-    state: {
-        number: {
-            type: Number,
-            default: orderStates.inProgressNumber
-
-        },
-        description: {
-            type: String,
-            default: orderStates.inProgress
-        }
-    },
-    arrivalTime: {
-        type: Date,
-        required: true
-    },
-    restaurantName: {
-        type: String,
-        required: true
-    },
-    riderId:{ 
-        type: MongoDB.ObjectId,
-        default: null
-    },
-    userId: {
-        type: MongoDB.ObjectId,
-        required: true
-    }
+    ]
 });
 
 module.exports = mongoose.model('Order', orderSchema)

@@ -10,8 +10,7 @@ router.route('/')
 ;
 router.route('/user')
     .get(verifyRoles(roles.USER), userOrderController.getOrdersUser)
-    .put(verifyRoles(roles.USER), userOrderController.putOrder)
-    .post(verifyRoles(roles.USER), userOrderController.postOrderPlates)
+    .post(verifyRoles(roles.USER), userOrderController.postOrder)
     .delete(verifyRoles(roles.USER), userOrderController.deleteOrder)
 ;
 

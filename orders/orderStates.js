@@ -1,12 +1,10 @@
 const orderStates = {
-    inProgress: "In progress",
-    delivering: "Delivering",
-    delivered: "Delivered",
-    late: "Late",
-    inProgressNumber: 0,
-    deliveringNumber: 1,
-    lateNumber: 2,
-    deliveredNumber: 3
+    created: 0,
+    inProgress: 1,
+    delivering: 2,
+    late: 3,
+    delivered: 4,
+    canceled: 5
 };
 const orderStatesList = [
     "In progress",
