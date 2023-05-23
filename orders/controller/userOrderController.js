@@ -112,7 +112,7 @@ const deleteOrder = async(req,res) => {
     }
 
     // only orders in progress can be modified
-    if(order.state > orderStates.orderStates.inProgressNumber){
+    if(order.state > orderStates.inProgress){
         return res.status(500).json({'message':'Order is not in preparation, cannot modify'});
     }
 
