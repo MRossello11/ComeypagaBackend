@@ -54,7 +54,7 @@ const orderSchema = new Schema({
                 required: false
             },
             price: {
-                type: MongoDB.Decimal128,
+                type: String,
                 required: true
             }
         }
