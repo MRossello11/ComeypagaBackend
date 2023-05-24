@@ -5,14 +5,25 @@ const fs = require('fs');
 // get all restaurants
 const getRestaurants = async(req,res) => {
     const restaurants = await Restaurant.find(
-        { isDeleted: false },
-        { menu: { $elemMatch: { isDeleted: false } }, isDeleted: false },
+        { isDeleted: false }
     ).exec();
 
     if (!restaurants) return res.sendStatus(204);
 
+
+    // filter out the deleted plates from the menu
+    const filteredRestaurants = restaurants.map((restaurant) => {
+        const filteredMenu = restaurant.menu.filter((plate) => !plate.isDeleted);
+
+        // return a new object with the filtered menu
+        return {
+            ...restaurant.toObject(),
+            menu: filteredMenu
+        };
+    });
+
     // get images
-    const restaurantsWithImages = restaurants.map((restaurant) => {
+    const restaurantsWithImages = filteredRestaurants.map((restaurant) => {
       if (fs.existsSync(restaurant.picture) && restaurant.picture.length != 0) {
         const image = fs.readFileSync(restaurant.picture);
         const base64Image = Buffer.from(image).toString('base64');
