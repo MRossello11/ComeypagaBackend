@@ -4,8 +4,7 @@ const { verifyAddress } = require('../../config/verifyAddress');
 
 // get all non-delivered orders from a user
 const getOrdersUser = async(req, res) => {
-    const { userId } = req.body;
-
+    const userId = req.params.userId;
     if(!userId){
         return res.sendStatus(400);
     }
