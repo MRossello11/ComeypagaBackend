@@ -1,4 +1,5 @@
 const User = require('../model/User');
+const crypto = require('crypto');
 
 const handleResetPassword = async(req, res) => {
     const { username, newPassword } = req.body;
@@ -15,10 +16,15 @@ const handleResetPassword = async(req, res) => {
         });
     }
 
+    // hash password
+    const hash = crypto.createHash('sha256');
+    hash.update(newPassword);
+    const hashedNewPassword = hash.digest('hex');
+
     try{
         await User.updateOne(
             { _id: foundUser._id },
-            { $set: { "password": newPassword } }
+            { $set: { "password": hashedNewPassword } }
         );
 
         res.status(200).json({
