@@ -1,5 +1,6 @@
 const Order = require('../model/Order');
 const orderStates = require('../orderStates').orderStates;
+const { ObjectId } = require('mongodb');
 
 // get all available orders (not assigned and in progress orders)
 const getOrders = async(req, res) => {
@@ -41,6 +42,20 @@ const postOrderState = async(req, res) => {
 
     if(!order){
         return res.status(500).json({'message':'Order not found'});
+    }
+
+    let orderWithoutRider = false;
+
+    if(order.riderId != riderId){
+        orderWithoutRider = false; // has rider
+    }
+
+    if (ObjectId.isEmpty(order.riderId)) {
+        orderWithoutRider = true; // does not have rider
+    }
+
+    if(!orderWithoutRider){
+        return res.status(500).json({'message':'Order is already taken'});
     }
 
     if(newState <= order.state){
