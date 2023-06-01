@@ -10,7 +10,7 @@ const getOrders = async(req, res) => {
 
 // get all orders assigned to a rider (that haven't been delivered)
 const getOrdersRider = async(req, res) => {
-    const riderId = req.params.userId;
+    const riderId = req.params.riderId;
     
     if(!riderId){
         return res.sendStatus(400);
