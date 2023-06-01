@@ -46,12 +46,10 @@ const postOrderState = async(req, res) => {
 
     let orderWithoutRider = false;
 
-    if(order.riderId != riderId){
-        orderWithoutRider = false; // has rider
-    }
-
-    if (ObjectId.isEmpty(order.riderId)) {
+    if (!order.riderId) {
         orderWithoutRider = true; // does not have rider
+    } else if (order.riderId !== riderId) {
+        orderWithoutRider = false; // has a different rider
     }
 
     if(!orderWithoutRider){
