@@ -1,164 +1,140 @@
 const Order = require('../model/Order');
-const orderStates = require('../orderStates');
+const orderStates = require('../orderStates').orderStates;
+const { verifyAddress } = require('../../config/verifyAddress');
 
 // get all non-delivered orders from a user
 const getOrdersUser = async(req, res) => {
-    const { userId } = req.body;
-
+    const userId = req.params.userId;
     if(!userId){
         return res.sendStatus(400);
     }
 
-    const userOrders = await Order.find({ userId: userId, state: { $ne: orderStates.delivered }}).exec();
+    const userOrders = await Order.find({ userId: userId, state: { $nin: [orderStates.delivered, orderStates.canceled] }}).exec();
 
-    res.json(userOrders);
+    res.status(200).json({'orders':userOrders});
 }
 
-
-// create an order
-const putOrder = async(req,res) => {
+// create or modify order
+const postOrder = async(req, res) => {
     const {
-        plates,
+        _id,
         shippingAddress,
+        state,
         arrivalTime,
+        restaurantId,
         restaurantName,
-        userId
+        userId,
+        orderLines
     } = req.body;
+    if(_id){
+        // order already exists, update
+        const foundOrder = await Order.findOne({ _id }).exec();
 
-    // check attributes
-    if(
-        !plates ||
-        !shippingAddress ||
-        !arrivalTime ||
-        !restaurantName ||
-        !userId
-    ){
-        return res.sendStatus(400);
-    }
-
-    if (!Array.isArray(plates)) {
-        return res.status(400).send({ error: "Plates must be a list" });
-    }
-
-    for (const plate of plates) {
-        if (!plate.name || !plate.quantity || !plate.price || !plate.id) {
-            return res.status(400).send({ error: "Each plate must have an id, name, quantity, and price" });
+        if(!foundOrder){
+            return res.status(500).json({'message':"Order not found"})
         }
-    }
 
-    if(!shippingAddress.street || !shippingAddress.town){
-        return res.status(400).send({ error: "Shipping address is incomplete (needs: street and town)" });
-    }
+        // only orders in progress can be modified
+        if (foundOrder.state > orderStates.inProgress) {
+            return res.status(500).json({ 'message': 'Order is not in preparation, cannot modify' });
+        }
 
-    // check duplicates (1 order per user in a restaurant)
-    const duplicate = await Order.findOne({ userId: userId, restaurantName: restaurantName}).exec();
+        const order = await Order.findOneAndUpdate(
+            { _id },
+            { $set: { 
+                orderLines,
+                state
+            }},
+            { new: true}
+        ).exec();
 
-    if(duplicate){
-        return res.status(409).json({error:'Only one order per restaurant is allowed'});
-    }
-    try {
-        const result = await Order.create({
-            plates,
+        return res.status(200).json({ 'order': order });
+    } else {
+        // check attributes
+        if (
+            !verifyAddress(shippingAddress) ||
+            !restaurantId ||
+            !restaurantName ||
+            !userId
+        ) {
+            console.log(req.body);
+            return res.status(400).json({'message':'Invalid request'});
+        }
+
+        // check order lines?
+        if (!Array.isArray(orderLines)) {
+            return res.status(400).json({ 'message': "Orderlines must be a list" });
+        }
+        for (const orderLine of orderLines) {
+            if (!orderLine.plateName || !orderLine.quantity || !orderLine.price || !orderLine.plateId) {
+                return res.status(400).json({ 'message': "Each plate must have an id, name, quantity, and price" });
+            }
+        }
+
+        console.log("Verified");
+        // check duplicates (1 order per user in a restaurant)
+        const duplicate = await Order.findOne({ userId, restaurantId }).exec();
+
+        if (duplicate) {
+            // users can have multiple orders per restaurant if they send the others
+            // (users can only have one order if it's only in created state)
+            if(duplicate.state == orderStates.created){
+                return res.status(409).json({ 'message': 'Only one order per restaurant is allowed' });
+            }
+        }
+
+        // create order
+        const order = await Order.create({
             shippingAddress,
+            state,
             arrivalTime,
+            restaurantId,
             restaurantName,
-            userId
+            userId,
+            orderLines,
         });
-        res.status(201).json(result);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({error:error})
-    }
-}
 
-// modify order plates
-const postOrderPlates = async(req,res) => {
-    const{
-        orderId,
-        newPlates
-    } = req.body;
-
-    // check attributes
-    if(!orderId || !newPlates){
-        return res.sendStatus(400);
+        return res.status(201).json({'order':order})
     }
 
-    // check plates
-    if (!Array.isArray(newPlates)) {
-        return res.status(400).send({ error: "Plates must be a list" });
-    }
-
-    for (const plate of newPlates) {
-        if (!plate.name || !plate.quantity || !plate.price || !plate.id) {
-            return res.status(400).send({ error: "Each plate must have an id, name, quantity, and price" });
-        }
-    }
-
-    // get order
-    const order = await Order.findOne({ _id: orderId }).exec();
-
-    if(!order){
-        return res.status(500).json({'message':'Order not found'});
-    }
-
-    // only orders in progress can be modified
-    if(order.state > orderStates.orderStates.inProgressNumber){
-        return res.status(500).json({'message':'Order is not in preparation, cannot modify'});
-    }
-
-    try {
-        // modify order
-        await Order.updateOne(
-            { _id: order.id },
-            { $set: { plates: newPlates }}
-        );
-        
-        res.sendStatus(200);
-    } catch (error) {
-        console.error(error);
-        res.send(500).json({error:error})
-    }
 }
 
 // delete order
 const deleteOrder = async(req,res) => {
-    const {
-        orderId
-    } = req.body;
+    const _id = req.params.id;
 
     // check attributes
-    if(!orderId){
+    if(!_id){
         return res.sendStatus(400);
     }
 
     // get order
-    const order = await Order.findOne({ _id: orderId }).exec();
+    const order = await Order.findOne({ _id }).exec();
 
     if(!order){
         return res.status(500).json({'message':'Order not found'});
     }
 
     // only orders in progress can be modified
-    if(order.state > orderStates.orderStates.inProgressNumber){
+    if(order.state > orderStates.inProgress){
         return res.status(500).json({'message':'Order is not in preparation, cannot modify'});
     }
 
     try {
-        // delete order    
-        await Order.deleteOne(
-            { _id: order.id }
+        // cancel order    
+        await Order.updateOne(
+            { _id: order._id },
+            { $set: { state: orderStates.canceled }}
         );
 
-        res.sendStatus(200);
+        res.status(200).json({ 'message':'Order deleted' });
     } catch (error) {
-        console.error(error);
-        res.send(500).json({error:error})
+        res.status(500).json({'message':'An error occurred'})
     }
 }
 
 module.exports = {
     getOrdersUser,
-    putOrder,
-    postOrderPlates,
+    postOrder,
     deleteOrder
 }

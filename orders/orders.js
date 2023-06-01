@@ -9,15 +9,21 @@ router.route('/')
     .get(verifyRoles(roles.RIDER), riderOrderController.getOrders)
 ;
 router.route('/user')
+    .post(verifyRoles(roles.USER), userOrderController.postOrder)
+;
+router.route('/user/:userId')
     .get(verifyRoles(roles.USER), userOrderController.getOrdersUser)
-    .put(verifyRoles(roles.USER), userOrderController.putOrder)
-    .post(verifyRoles(roles.USER), userOrderController.postOrderPlates)
+;
+router.route('/user/:id')
     .delete(verifyRoles(roles.USER), userOrderController.deleteOrder)
 ;
 
 router.route('/rider')
-    .get(verifyRoles(roles.RIDER), riderOrderController.getOrdersRider)
     .post(verifyRoles(roles.RIDER), riderOrderController.postOrderState)
+;
+
+router.route('/rider/:riderId')
+    .get(verifyRoles(roles.RIDER), riderOrderController.getOrdersRider)
 ;
 
 module.exports = router

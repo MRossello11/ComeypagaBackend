@@ -1,6 +1,7 @@
 const User = require('../model/User');
 const { verifyAddress } = require('../../config/verifyAddress');
 const roles = require('../../config/roles');
+const crypto = require('crypto');
 
 const handleRegistry = async(req, res) => {
     const { 
@@ -44,6 +45,11 @@ const handleRegistry = async(req, res) => {
     }
 
     try {
+        // hash password using sha256
+        const hash = crypto.createHash('sha256');
+        hash.update(password);
+        const hashedPassword = hash.digest('hex');
+
         // create and store the new user
         const result = await User.create({
             username,
@@ -57,9 +63,8 @@ const handleRegistry = async(req, res) => {
                 town
             },
             role: userRole,
-            password
+            password: hashedPassword
         });
-
         console.log(result);
 
         res.status(201).json({ 'message': `New user ${username} created!` });
