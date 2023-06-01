@@ -19,8 +19,11 @@ router.route('/user/:id')
 ;
 
 router.route('/rider')
-    .get(verifyRoles(roles.RIDER), riderOrderController.getOrdersRider)
     .post(verifyRoles(roles.RIDER), riderOrderController.postOrderState)
+;
+
+router.route('/rider/:riderId')
+    .get(verifyRoles(roles.RIDER), riderOrderController.getOrdersRider)
 ;
 
 module.exports = router

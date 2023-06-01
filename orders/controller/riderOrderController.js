@@ -10,7 +10,7 @@ const getOrders = async(req, res) => {
 
 // get all orders assigned to a rider (that haven't been delivered)
 const getOrdersRider = async(req, res) => {
-    const { riderId } = req.body;
+    const riderId = req.params.userId;
     
     if(!riderId){
         return res.sendStatus(400);
@@ -22,7 +22,7 @@ const getOrdersRider = async(req, res) => {
     // get all orders in progress (without a rider)
     const allOrders = await Order.find({ state: orderStates.inProgress });
 
-    res.json({riderOrders, allOrders});
+    res.status(200).json({riderOrders, allOrders});
 }
 
 // changes order state 
@@ -56,7 +56,7 @@ const postOrderState = async(req, res) => {
             }}
     );
 
-    res.status(200).json(result);
+    return res.status(200).json({'message':'Order updated'});
 }
 
 module.exports = {

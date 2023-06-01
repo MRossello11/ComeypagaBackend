@@ -26,8 +26,6 @@ const postOrder = async(req, res) => {
         userId,
         orderLines
     } = req.body;
-    console.log("Post order");
-
     if(_id){
         // order already exists, update
         const foundOrder = await Order.findOne({ _id }).exec();
@@ -43,7 +41,10 @@ const postOrder = async(req, res) => {
 
         const order = await Order.findOneAndUpdate(
             { _id },
-            { $set: { orderLines }},
+            { $set: { 
+                orderLines,
+                state
+            }},
             { new: true}
         ).exec();
 
@@ -75,7 +76,11 @@ const postOrder = async(req, res) => {
         const duplicate = await Order.findOne({ userId, restaurantId }).exec();
 
         if (duplicate) {
-            return res.status(409).json({ 'message': 'Only one order per restaurant is allowed' });
+            // users can have multiple orders per restaurant if they send the others
+            // (users can only have one order if it's only in created state)
+            if(duplicate.state == orderStates.created){
+                return res.status(409).json({ 'message': 'Only one order per restaurant is allowed' });
+            }
         }
 
         // create order
@@ -122,9 +127,9 @@ const deleteOrder = async(req,res) => {
             { $set: { state: orderStates.canceled }}
         );
 
-        res.sendStatus(200);
+        res.status(200).json({ 'message':'Order deleted' });
     } catch (error) {
-        res.send(500).json({'message':'An error occurred'})
+        res.status(500).json({'message':'An error occurred'})
     }
 }
 
