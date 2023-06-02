@@ -44,11 +44,13 @@ const postOrderState = async(req, res) => {
         return res.status(500).json({'message':'Order not found'});
     }
 
-    let orderWithoutRider = false;
+    let orderWithoutRider = true;
 
     if (!order.riderId) {
         orderWithoutRider = true; // does not have rider
-    } else if (order.riderId !== riderId) {
+    } 
+
+    if (order.riderId != riderId) {
         orderWithoutRider = false; // has a different rider
     }
 

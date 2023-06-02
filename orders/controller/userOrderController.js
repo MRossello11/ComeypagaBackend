@@ -133,8 +133,20 @@ const deleteOrder = async(req,res) => {
     }
 }
 
+const getHistoricOrdersUser = async(req,res) => {
+    const userId = req.params.userId;
+    if(!userId){
+        return res.sendStatus(400);
+    }
+
+    const userOrders = await Order.find({ userId: userId, state: { $in: [orderStates.delivered, orderStates.canceled] }}).exec();
+
+    return res.status(200).json({'orders':userOrders});
+}
+
 module.exports = {
     getOrdersUser,
     postOrder,
-    deleteOrder
+    deleteOrder,
+    getHistoricOrdersUser
 }

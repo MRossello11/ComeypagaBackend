@@ -25,5 +25,7 @@ router.route('/rider')
 router.route('/rider/:riderId')
     .get(verifyRoles(roles.RIDER), riderOrderController.getOrdersRider)
 ;
-
+router.route('/user/historic/:userId')
+    .get(verifyRoles(roles.USER), userOrderController.getHistoricOrdersUser)
+;
 module.exports = router
